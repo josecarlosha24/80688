@@ -2,6 +2,7 @@ package mx.uv;
 
 import static spark.Spark.*;
 import com.google.gson.*;
+
 /**
  * Hello world!
  *
@@ -29,11 +30,11 @@ public class App {
         before((req, res) -> res.header("Access-Control-Allow-Origin", "*"));
 
         // before((request, response) -> {
-        //     response.header("Access-Control-Allow-Origin", origin);
-        //     response.header("Access-Control-Request-Method", methods);
-        //     response.header("Access-Control-Allow-Headers", headers);
-        //     // Note: this may or may not be necessary in your particular application
-        //     response.type("application/json");
+        // response.header("Access-Control-Allow-Origin", origin);
+        // response.header("Access-Control-Request-Method", methods);
+        // response.header("Access-Control-Allow-Headers", headers);
+        // // Note: this may or may not be necessary in your particular application
+        // response.type("application/json");
         // });
 
         System.out.println("Hello World!");
@@ -77,28 +78,28 @@ public class App {
             return respuesta + l + " <a href='http://127.0.0.1:5500/envio_formulario.html'>volver</a>";
         });
 
-
         post("/saludarJson", (req, res) -> {
             // String l = req.queryParams("firstName");
             // String p = req.queryParams("lastName");
             // String respuesta;
-            System.out.println( req.body() );
+            System.out.println(req.body());
 
             // if (l.equals("root") && p.equals("123456"))
-            //     respuesta = "Bienvenido usuario ";
+            // respuesta = "Bienvenido usuario ";
             // else
-            //     respuesta = "Usuario equivocado ";
-            // return respuesta + l + " <a href='http://127.0.0.1:5500/envio_formulario.html'>volver</a>";
+            // respuesta = "Usuario equivocado ";
+            // return respuesta + l + " <a
+            // href='http://127.0.0.1:5500/envio_formulario.html'>volver</a>";
             JsonParser parser = new JsonParser();
             JsonElement arbol = parser.parse(req.body());
-            JsonObject peticion =  arbol.getAsJsonObject();
-            Object usuario = peticion.get("firstName") ;
-            System.out.println( usuario + " " + peticion.get("password"));
+            JsonObject peticion = arbol.getAsJsonObject();
+            Object usuario = peticion.get("firstName");
+            System.out.println(usuario + " " + peticion.get("password"));
 
             JsonObject objetoJson = new JsonObject();
             objetoJson.addProperty("usuario", usuario.toString());
-            objetoJson.addProperty("access",  "granted");
-            objetoJson.addProperty("time",  11111);
+            objetoJson.addProperty("access", "granted");
+            objetoJson.addProperty("time", 11111);
 
             return objetoJson;
         });
