@@ -2,11 +2,13 @@ package mx.uv;
 
 import static spark.Spark.*;
 
+import com.google.gson.*;
+
+import mx.uv.bd.*;
+
 import java.util.Map;
 import java.util.UUID;
 import java.util.HashMap;
-
-import com.google.gson.*;
 
 /**
  * Hello world!
@@ -14,17 +16,11 @@ import com.google.gson.*;
  */
 public class App {
     private static Gson gson = new Gson();
-    private static Usuario usuario = new Usuario("1", "john@htomail.com", "123456");
     private static Map<String, Usuario> usuarios = new HashMap<>();
 
     public static void main(String[] args) {
-        System.out.println("Hello World!");
         // Enables CORS on requests. This method is an initialization method and should
         // be called once.
-
-        port(getHerokuAssignedPort());
-        get("/hello", (req, res) -> "Hello Heroku World");
-
         options("/*", (request, response) -> {
 
             String accessControlRequestHeaders = request.headers("Access-Control-Request-Headers");
@@ -41,43 +37,24 @@ public class App {
         });
         before((req, res) -> res.header("Access-Control-Allow-Origin", "*"));
 
-        get("/usuario", (req, res)-> {
-            before((rq,rs)-> rs.type("application/json"));
-            return gson.toJson(usuario);
-        });
-
-        get("/usuarios", (req, res)-> {
-            before((rq,rs)-> rs.type("application/json"));
+        get("/usuarios", (req, res) -> {
+            before((rq, rs) -> rs.type("application/json"));
             return gson.toJson(usuarios.values());
         });
 
-        post("/usuario", (req, res)-> {
+        post("/usuario", (req, res) -> {
             String payload = req.body();
             String id = UUID.randomUUID().toString();
             Usuario u = gson.fromJson(payload, Usuario.class);
             u.setId(id);
-            usuarios.put(id, u);
+            // usuarios.put(id, u);
 
+            DAO dao = new DAO();
             JsonObject objetoJson = new JsonObject();
-            objetoJson.addProperty("status", "ok");
-            objetoJson.addProperty("id",  id);
-            return objetoJson;
-
-        });
-
-        get("/pagina", (req, res)->{
-            JsonObject objetoJson = new JsonObject();
-            objetoJson.addProperty("access", "ok");
-            objetoJson.addProperty("page",  "http://www.google.com");
+            objetoJson.addProperty("status", dao.crearUsuario(u));
+            objetoJson.addProperty("id", id);
             return objetoJson;
         });
-    }
-    
-    static int getHerokuAssignedPort() {
-        ProcessBuilder processBuilder = new ProcessBuilder();
-        if (processBuilder.environment().get("PORT") != null) {
-            return Integer.parseInt(processBuilder.environment().get("PORT"));
-        }
-        return 4567; //return default port if heroku-port isn't set (i.e. on localhost)
+
     }
 }
